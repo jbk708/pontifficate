@@ -51,9 +51,6 @@ def normalize_background(image: np.ndarray) -> np.ndarray:
     """
     logger.info("Performing background normalization...")
     normalized_image = image - np.min(image)
-    normalized_image = (
-        normalized_image / np.max(normalized_image) * 65535
-    )  
+    normalized_image = normalized_image / np.max(normalized_image) * 65535
     logger.info("Background normalization complete.")
     return normalized_image.astype(np.uint16)
-

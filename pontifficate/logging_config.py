@@ -1,5 +1,6 @@
 import logging
 
+
 def setup_logger(name: str) -> logging.Logger:
     """
     Sets up a logger with the specified name.
@@ -8,7 +9,7 @@ def setup_logger(name: str) -> logging.Logger:
     if not logger.hasHandlers():
         handler = logging.StreamHandler()
         formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
         handler.setFormatter(formatter)
         logger.addHandler(handler)

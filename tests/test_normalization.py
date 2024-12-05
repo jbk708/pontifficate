@@ -19,7 +19,6 @@ def test_rescale_intensity_16bit():
     assert np.max(rescaled) == 65535
 
 
-
 def test_rescale_intensity_missing_levels():
     """Test intensity rescaling when levelLow or levelHigh is missing."""
     image = np.array([[50, 100, 150], [200, 250, 255]], dtype=np.uint16)
@@ -48,4 +47,3 @@ def test_normalize_background_valid():
     normalized = normalize_background(image)
     assert np.min(normalized) == 0
     assert np.max(normalized) == 65535
-
