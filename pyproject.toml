@@ -1,0 +1,54 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+name = "pontifficate"
+version = "0.0.0"
+description = "Immunofluoresence image processing."
+authors = ["Jonathan Kirkland <jokirkland@ucsd.edu>"]
+readme = "README.md"
+packages = [{include = "pontifficate"}]
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 95"
+pythonpath = [
+  ".", "pontifficate"
+]
+
+[tool.coverage.run]
+source = ["pontifficate"]
+
+[tool.pylint]
+max-line-length = 127
+disable = [
+    "E1101" # Used when a variable is accessed for a nonexistent member.
+]
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+poetry-dynamic-versioning = {extras = ["plugin"], version = "^0.21.1"}
+python-dotenv = "^0.21.0"
+numpy = "^1.21"
+ruff = "^0.8.2"
+tifffile = "^2023.4.12"
+scikit-bio = "^0.6.2"
+scikit-image = "^0.24.0"
+click = "^8.1.7"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+pytest-mock = "^3.10.0"
+pylint = "^2.17.2"
+toml = "^0.10.2"
+
+[tool.poetry.scripts]
+pontifficate = "pontifficate.cli:normalize"
+
+
