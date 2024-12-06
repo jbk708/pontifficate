@@ -5,9 +5,9 @@ import click
 import numpy as np
 import tifffile
 
-from pontifficate.logging_config import setup_logger, set_global_log_level
+from pontifficate.logging_config import set_global_log_level, setup_logger
 from pontifficate.metadata import extract_metadata, parse_metadata
-from pontifficate.normalization import normalize_background
+from pontifficate.normalization import normalize_background, rescale_intensity
 from pontifficate.utils import save_tiff
 
 # Initialize logger
@@ -69,9 +69,14 @@ def process_image(file_path, output_dir):
         metadata = parse_metadata(raw_metadata)
 
         normalized_image = normalize_background(image)
-
+        scaled_image = rescale_intensity(
+            normalized_image,
+            metadata["levelLow"],
+            metadata["levelHigh"],
+            metadata["bitsPerSample"],
+        )
         output_path = os.path.join(output_dir, os.path.basename(file_path))
-        save_tiff(normalized_image, output_path, metadata)
+        save_tiff(scaled_image, output_path, metadata)
         logger.info(f"Successfully processed: {file_path}")
 
     except Exception as e:
