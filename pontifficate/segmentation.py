@@ -1,9 +1,10 @@
 """segmentation.py"""
 
-import numpy as np
 import cv2
-from skimage import filters, morphology, measure
+import numpy as np
+from skimage import filters, measure, morphology
 from skimage.filters import gaussian
+
 from pontifficate.logging_config import setup_logger
 
 # Initialize logger
@@ -66,10 +67,12 @@ def create_mask(
 
 
 if __name__ == "__main__":
-    from pontifficate.utils import read_tiff, save_tiff
-    import tifffile
-    import matplotlib.pyplot as plt
     import os
+
+    import matplotlib.pyplot as plt
+    import tifffile
+
+    from pontifficate.utils import read_tiff, save_tiff
 
     # Load the uint16 image
     input_path = (

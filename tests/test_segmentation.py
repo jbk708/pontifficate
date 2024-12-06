@@ -1,7 +1,8 @@
 """segmentation.py"""
 
 import numpy as np
-from pontifficate.segmentation import create_mask, segment_cells, draw_boundaries
+
+from pontifficate.segmentation import create_mask, draw_boundaries, segment_cells
 
 
 def test_create_mask_otsu():
