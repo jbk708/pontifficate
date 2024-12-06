@@ -3,6 +3,7 @@
 import numpy as np
 import cv2
 from skimage import filters, morphology, measure
+from skimage.filters import gaussian
 from pontifficate.logging_config import setup_logger
 
 # Initialize logger
@@ -10,7 +11,7 @@ logger = setup_logger(__name__)
 
 
 def create_mask(
-    image: np.ndarray, thresholding_method: str = "otsu", min_area: int = 100
+    image: np.ndarray, thresholding_method: str = "otsu", min_area: int = 1
 ) -> np.ndarray:
     """
     Create a binary mask for cell segmentation from an input image.
@@ -25,15 +26,23 @@ def create_mask(
     """
     logger.info("Starting mask creation...")
 
+    # Normalize or rescale the image
+
+    logger.info("Rescaling uint16 image to uint8...")
+    rescaled_image = (image / image.max() * 255).astype(np.uint8)
+
+    # Apply thresholding
     if thresholding_method == "otsu":
+        smoothed_image = gaussian(rescaled_image, sigma=2)
         logger.info("Applying Otsu's thresholding...")
-        threshold = filters.threshold_otsu(image)
-        binary_mask = image > threshold
+        threshold = filters.threshold_otsu(smoothed_image)
+        logger.info(f"Computed Otsu threshold: {threshold}")
+        binary_mask = smoothed_image > threshold
     elif thresholding_method == "adaptive":
         logger.info("Applying adaptive thresholding...")
         binary_mask = (
             cv2.adaptiveThreshold(
-                image.astype(np.uint8),
+                rescaled_image,
                 255,
                 cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                 cv2.THRESH_BINARY,
@@ -48,6 +57,7 @@ def create_mask(
 
     logger.info("Thresholding complete.")
 
+    # Remove small objects
     logger.info(f"Removing objects smaller than {min_area} pixels...")
     cleaned_mask = morphology.remove_small_objects(binary_mask, min_size=min_area)
 
@@ -55,43 +65,39 @@ def create_mask(
     return cleaned_mask
 
 
-def segment_cells(mask: np.ndarray) -> list:
-    """
-    Label and segment cells from a binary mask.
+if __name__ == "__main__":
+    from pontifficate.utils import read_tiff, save_tiff
+    import tifffile
+    import matplotlib.pyplot as plt
+    import os
 
-    Args:
-        mask (np.ndarray): Binary mask with segmented regions.
+    # Load the uint16 image
+    input_path = (
+        "/home/jbk/side_projects/pontifficate/data/testing/Image_0001_tritc.tiff"
+    )
+    output_dir = "/home/jbk/side_projects/pontifficate/data/testing/"
+    output_mask_path = os.path.join(output_dir, "mask.tiff")
+    output_plot_path = os.path.join(output_dir, "mask_preview.png")
 
-    Returns:
-        list: List of labeled cell regions.
-    """
-    logger.info("Starting cell segmentation...")
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
 
-    labeled_mask = measure.label(mask)
-    logger.info(f"Found {labeled_mask.max()} connected components.")
-    regions = measure.regionprops(labeled_mask)
+    # Read the input image
+    image = read_tiff(input_path)
 
-    logger.info("Cell segmentation complete.")
-    return regions
+    # Create the mask
+    mask = create_mask(image, thresholding_method="otsu")
 
+    # Save the mask (rescale for saving)
+    mask_uint8 = (mask * 255).astype(np.uint8)
+    save_tiff(mask_uint8, output_mask_path)
 
-def draw_boundaries(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
-    """
-    Overlay cell boundaries on the original image.
+    # Save the mask preview plot
+    plt.figure()
+    plt.imshow(mask_uint8, cmap="gray")
+    plt.title("Mask Preview")
+    plt.axis("off")
+    plt.savefig(output_plot_path, bbox_inches="tight", dpi=300)
+    logger.info(f"Mask saved to: {output_mask_path}")
+    logger.info(f"Mask preview plot saved to: {output_plot_path}")
 
-    Args:
-        image (np.ndarray): Original grayscale image.
-        mask (np.ndarray): Binary mask with segmented cells.
-
-    Returns:
-        np.ndarray: Image with cell boundaries drawn.
-    """
-    logger.info("Drawing boundaries on the image...")
-
-    boundaries = morphology.dilation(mask) ^ mask
-
-    boundary_image = image.copy()
-    boundary_image[boundaries] = boundary_image.max()
-
-    logger.info("Boundary overlay complete.")
-    return boundary_image
