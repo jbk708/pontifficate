@@ -44,17 +44,15 @@ def test_segment_cells():
         ],
         dtype=bool,
     )
-
     regions = segment_cells(mask)
-    assert len(regions) == 2 
-    assert all(
-        region.area > 0 for region in regions
-    )  
+
+    assert len(regions) == 2  # Expect two distinct regions
+    assert all(region.area > 0 for region in regions)  # Regions should have non-zero area
+
 
 
 def test_draw_boundaries():
     """Test boundary overlay on an image."""
-    # Create a synthetic image and mask
     image = np.zeros((5, 5), dtype=np.uint8)
     mask = np.array(
         [
@@ -68,5 +66,6 @@ def test_draw_boundaries():
     )
 
     boundary_image = draw_boundaries(image, mask)
-    assert boundary_image.shape == image.shape  
-    assert np.any(boundary_image > image) 
+    assert boundary_image.shape == image.shape  # Ensure dimensions match
+    assert np.any(boundary_image > image)  # Boundaries should modify the image
+
