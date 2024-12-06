@@ -100,4 +100,3 @@ if __name__ == "__main__":
     plt.savefig(output_plot_path, bbox_inches="tight", dpi=300)
     logger.info(f"Mask saved to: {output_mask_path}")
     logger.info(f"Mask preview plot saved to: {output_plot_path}")
-

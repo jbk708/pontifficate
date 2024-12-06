@@ -19,8 +19,8 @@ def test_create_mask_otsu():
     )
 
     mask = create_mask(image, thresholding_method="otsu", min_area=5)
-    assert mask.sum() > 0  
-    assert mask.shape == image.shape  
+    assert mask.sum() > 0
+    assert mask.shape == image.shape
 
 
 def test_create_mask_adaptive():
@@ -28,8 +28,8 @@ def test_create_mask_adaptive():
     image = np.linspace(0, 255, 25).reshape(5, 5).astype(np.uint8)
 
     mask = create_mask(image, thresholding_method="adaptive", min_area=1)
-    assert mask.sum() > 0  
-    assert mask.shape == image.shape  
+    assert mask.sum() > 0
+    assert mask.shape == image.shape
 
 
 def test_segment_cells():
@@ -47,8 +47,9 @@ def test_segment_cells():
     regions = segment_cells(mask)
 
     assert len(regions) == 2  # Expect two distinct regions
-    assert all(region.area > 0 for region in regions)  # Regions should have non-zero area
-
+    assert all(
+        region.area > 0 for region in regions
+    )  # Regions should have non-zero area
 
 
 def test_draw_boundaries():
@@ -68,4 +69,3 @@ def test_draw_boundaries():
     boundary_image = draw_boundaries(image, mask)
     assert boundary_image.shape == image.shape  # Ensure dimensions match
     assert np.any(boundary_image > image)  # Boundaries should modify the image
-
