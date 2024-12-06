@@ -4,7 +4,7 @@ import json
 
 import numpy as np
 import pytest
-from tifffile import imwrite, TiffFile
+from tifffile import TiffFile, imwrite
 
 from pontifficate.utils import read_tiff, save_tiff
 

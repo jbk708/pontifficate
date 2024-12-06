@@ -1,10 +1,11 @@
 """test_normalization.py"""
 
-import pytest
 import numpy as np
+import pytest
+
 from pontifficate.normalization import (
-    rescale_intensity,
     normalize_background,
+    rescale_intensity,
 )
 
 
