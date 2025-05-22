@@ -51,6 +51,6 @@ pylint = "^2.17.2"
 toml = "^0.10.2"
 
 [tool.poetry.scripts]
-pontifficate = "pontifficate.cli:normalize"
+pontifficate = "pontifficate.cli:cli"
 
 
